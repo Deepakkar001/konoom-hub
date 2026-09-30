@@ -26,13 +26,13 @@ const randInt = (min: number, max: number) =>
   Math.floor(rand() * (max - min + 1)) + min;
 
 export const COUNTRIES: Country[] = [
-  { code: "TD", name: "Chad", currency: "XAF", flag: "🇹🇩" },
+  { code: "CD", name: "Chad", currency: "XAF", flag: "🇹🇩" },
   { code: "CM", name: "Cameroon", currency: "XAF", flag: "🇨🇲" },
   { code: "CF", name: "Central African Republic", currency: "XAF", flag: "🇨🇫" },
   { code: "CG", name: "Congo", currency: "XAF", flag: "🇨🇬" },
   { code: "GA", name: "Gabon", currency: "XAF", flag: "🇬🇦" },
   { code: "GQ", name: "Equatorial Guinea", currency: "XAF", flag: "🇬🇶" },
-  { code: "CD", name: "DR Congo", currency: "CDF", flag: "🇨🇩" },
+  { code: "TD", name: "DR Congo", currency: "CDF", flag: "🇨🇩" },
 ];
 
 export const countryByCode = (code: CountryCode) =>
@@ -47,14 +47,14 @@ export const PARTNERS: Partner[] = [
     registrationNo: "RC-CHD-12345",
     description:
       "Digital wallet and remittance services provider in Chad enabling cross-border transactions through Central Hub.",
-    country: "TD",
+    country: "CD",
     partnerType: "Mobile Money",
     status: "active",
     onboardedDate: "2026-06-02",
     contact: {
       name: "John Doe",
       designation: "Partnership Manager",
-      email: "john.doe@konoom.td",
+      email: "john.doe@konoom.cd",
       phone: "+235 661234567",
       officePhone: "+235 661234568",
       address: "BP 1234, N'Djamena, Chad",
@@ -63,7 +63,7 @@ export const PARTNERS: Partner[] = [
       apiAccessType: "REST API",
       apiKeyMasked: "ck_7f9a2b4e8c6d…",
       apiSecretKeyMasked: "sk_9b82a71f4c2…",
-      baseUrl: "https://api.konoom.td/v1",
+      baseUrl: "https://api.konoom.cd/v1",
       callbackUrl: "https://hub.central.com/callback",
       ipWhitelist: "192.168.1.10, 192.168.1.11",
     },
@@ -71,7 +71,7 @@ export const PARTNERS: Partner[] = [
       bankName: "Commercial Bank Tchad",
       accountName: "Konoom Wallet Chad SARL",
       accountNumberMasked: "•••• •••• 4471",
-      swift: "CBTDTDND",
+      swift: "CBCDCDND",
     },
     corridors: ["COR-TD-CM"],
     stats: {
@@ -238,7 +238,7 @@ export const PARTNERS: Partner[] = [
 export const CORRIDORS: Corridor[] = [
   {
     id: "COR-TD-CM",
-    fromCountry: "TD",
+    fromCountry: "CD",
     toCountry: "CM",
     enabled: true,
     fxRate: 1.0,
@@ -272,7 +272,7 @@ export const CORRIDORS: Corridor[] = [
   },
   {
     id: "COR-TD-GA",
-    fromCountry: "TD",
+    fromCountry: "CD",
     toCountry: "GA",
     enabled: false,
     fxRate: 1.0,
@@ -313,7 +313,7 @@ function weightedStatus(): TransactionStatus {
 
 function maskMobile(country: CountryCode) {
   const n = randInt(100000, 999999);
-  return `${country === "TD" ? "+235" : "+237"} XXXX${String(n).slice(-2)}`;
+  return `${country === "CD" ? "+235" : "+237"} XXXX${String(n).slice(-2)}`;
 }
 
 function buildTimeline(status: TransactionStatus, createdAt: Date) {
