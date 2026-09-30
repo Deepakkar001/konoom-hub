@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+:root {
+  /* Neutral surface */
+  --background: #f4f5f7;
+  --surface: #ffffff;
+  --surface-sunken: #eef0f3;
+
+  /* Navy — structural / nav */
+  --navy-950: #081226;
+  --navy-900: #0c1d3b;
+  --navy-800: #142c52;
+  --navy-700: #1e3b68;
+  --navy-100: #e6ebf3;
+
+  /* Signal blue — primary actions */
+  --blue-600: #2f5ce0;
+  --blue-700: #2447b8;
+  --blue-50: #edf1fd;
+
+  /* Konoom gold — sparing accent */
+  --gold-500: #e3a72e;
+  --gold-600: #c48a17;
+  --gold-100: #fbedcd;
+
+  /* Status */
+  --success-600: #157a4a;
+  --success-100: #e2f5ea;
+  --danger-600: #c22e26;
+  --danger-100: #fbe7e5;
+  --warning-600: #b0730f;
+  --warning-100: #fbf0dc;
+  --info-600: #2f5ce0;
+  --info-100: #edf1fd;
+
+  /* Text */
+  --text-primary: #101828;
+  --text-secondary: #5b6472;
+  --text-tertiary: #8a93a3;
+  --border: #e2e5ea;
+  --border-strong: #cbd1db;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+
+  --color-navy-950: var(--navy-950);
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-navy-100: var(--navy-100);
+
+  --color-blue-600: var(--blue-600);
+  --color-blue-700: var(--blue-700);
+  --color-blue-50: var(--blue-50);
+
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-100: var(--gold-100);
+
+  --color-success-600: var(--success-600);
+  --color-success-100: var(--success-100);
+  --color-danger-600: var(--danger-600);
+  --color-danger-100: var(--danger-100);
+  --color-warning-600: var(--warning-600);
+  --color-warning-100: var(--warning-100);
+  --color-info-600: var(--info-600);
+  --color-info-100: var(--info-100);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --font-sans: "Inter Variable", "Noto Sans Arabic Variable", ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo,
+    Consolas, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.font-ref {
+  font-family: var(--font-mono);
+  letter-spacing: 0.01em;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:lang(ar) {
+  line-height: 1.7;
+}
+
+:lang(ar) * {
+  letter-spacing: 0 !important;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out;
+}
