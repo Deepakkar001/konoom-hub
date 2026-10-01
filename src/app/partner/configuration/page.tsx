@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Save, Copy, RefreshCw } from "lucide-react";
+import { Copy } from "lucide-react";
 import { Topbar } from "@/components/layout/Topbar";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldHint } from "@/components/ui/Field";
+import { Tabs } from "@/components/ui/Tabs";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import { useAuth } from "@/lib/auth-context";
@@ -26,7 +27,8 @@ export default function PartnerConfigurationPage() {
   const [rows, setRows] = useState<{ corridor: Corridor; config: PartnerCorridorConfig }[] | null>(null);
   const [callbackUrl, setCallbackUrl] = useState("");
   const [ipWhitelist, setIpWhitelist] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState("corridors");
+  const [corridorTab, setCorridorTab] = useState("");
   const { push } = useToast();
   const { t } = useI18n();
   const dataRevision = useDataRevision();
@@ -40,27 +42,26 @@ export default function PartnerConfigurationPage() {
         setIpWhitelist(p.access.ipWhitelist ?? "");
       }
     });
-    partnerCorridorService.listPartnerCorridorConfigs(user.partnerId).then(setRows);
-  }, [user?.partnerId, dataRevision]);
-
-  async function save(e: React.FormEvent) {
-    e.preventDefault();
-    if (!partner) return;
-    setSaving(true);
-    const updated = await partnerService.updatePartnerAccess(partner.id, {
-      callbackUrl: callbackUrl.trim() || undefined,
-      ipWhitelist: ipWhitelist.trim() || undefined,
+    partnerCorridorService.listPartnerCorridorConfigs(user.partnerId).then((nextRows) => {
+      setRows(nextRows);
+      setCorridorTab((current) => current && nextRows.some((row) => row.corridor.id === current) ? current : nextRows[0]?.corridor.id ?? "");
     });
-    setPartner(updated);
-    setSaving(false);
-    push("success", t("pconfig.saved"));
-  }
+  }, [user?.partnerId, dataRevision]);
 
   return (
     <div>
       <Topbar title={t("nav.configuration")} subtitle={t("pconfig.subtitle")} />
-      <div className="mx-auto max-w-3xl space-y-6 p-6">
-        <Card>
+      <div className="w-full space-y-6 p-6">
+        <Tabs
+          tabs={[
+            { id: "corridors", label: t("pconfig.corridors") },
+            { id: "api", label: t("pconfig.api") },
+          ]}
+          active={tab}
+          onChange={setTab}
+        />
+
+        {tab === "corridors" && <Card>
           <CardHeader title={t("pconfig.corridors")} subtitle={t("pconfig.corridorsSub")} />
           {!rows ? (
             <TableSkeleton rows={2} cols={4} />
@@ -69,8 +70,20 @@ export default function PartnerConfigurationPage() {
               {t("pconfig.empty")}
             </p>
           ) : (
-            <div className="space-y-6 p-5">
-              {rows.map(({ corridor, config }) => {
+            <div className="space-y-5 p-5">
+              <Tabs
+                tabs={rows.map(({ corridor }) => {
+                  const from = countryByCode(corridor.fromCountry);
+                  const to = countryByCode(corridor.toCountry);
+                  return {
+                    id: corridor.id,
+                    label: `${from.flag} ${countryDisplayName(from.code)} → ${to.flag} ${countryDisplayName(to.code)}`,
+                  };
+                })}
+                active={corridorTab}
+                onChange={setCorridorTab}
+              />
+              {rows.filter(({ corridor }) => corridor.id === corridorTab).map(({ corridor, config }) => {
                 const from = countryByCode(corridor.fromCountry);
                 const to = countryByCode(corridor.toCountry);
                 return (
@@ -104,6 +117,7 @@ export default function PartnerConfigurationPage() {
                         settlementFrequency: config.settlementFrequency,
                       }}
                       mode="rules"
+                      readOnly
                       onSave={async (draft) => {
                         if (!user?.partnerId) return;
                         await partnerCorridorService.savePartnerCorridorConfig(user.partnerId, corridor.id, {
@@ -124,9 +138,9 @@ export default function PartnerConfigurationPage() {
               })}
             </div>
           )}
-        </Card>
+        </Card>}
 
-        <form onSubmit={save}>
+        {tab === "api" && <Card>
           <Card>
             <CardHeader title={t("pconfig.api")} subtitle={t("pconfig.apiSub")} />
             <div className="space-y-4 p-5">
@@ -134,7 +148,7 @@ export default function PartnerConfigurationPage() {
                 <div>
                   <Label>{t("detail.apiKey")}</Label>
                   <div className="flex gap-2">
-                    <Input value={partner.access.apiKeyMasked} disabled className="font-ref" />
+                    <Input value={partner.access.apiKeyMasked} disabled className="font-ref text-black disabled:text-black" />
                     <Button
                       type="button"
                       variant="secondary"
@@ -150,39 +164,22 @@ export default function PartnerConfigurationPage() {
                     >
                       <Copy className="h-3.5 w-3.5" />
                     </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={async () => {
-                        const updated = await partnerService.regeneratePartnerApiKey(partner.id);
-                        setPartner(updated);
-                        push("success", t("detail.keyRegenerated"));
-                      }}
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" />
-                    </Button>
                   </div>
                   <FieldHint>{t("pconfig.regen")}</FieldHint>
                 </div>
               )}
               <div>
                 <Label>{t("detail.callback")}</Label>
-                <Input value={callbackUrl} onChange={(e) => setCallbackUrl(e.target.value)} placeholder="https://your-platform.com/webhooks/konoom" />
+                <Input value={callbackUrl} disabled className="text-black disabled:text-black" placeholder="https://your-platform.com/webhooks/konoom" />
               </div>
               <div>
                 <Label>{t("detail.ip")}</Label>
-                <Input value={ipWhitelist} onChange={(e) => setIpWhitelist(e.target.value)} placeholder="203.0.113.10, 203.0.113.11" />
+                <Input value={ipWhitelist} disabled className="text-black disabled:text-black" placeholder="203.0.113.10, 203.0.113.11" />
                 <FieldHint>{t("pconfig.ipHint")}</FieldHint>
               </div>
             </div>
-            <div className="flex justify-end border-t border-border px-5 py-4">
-              <Button type="submit" loading={saving}>
-                <Save className="h-3.5 w-3.5" /> {t("common.saveChanges")}
-              </Button>
-            </div>
           </Card>
-        </form>
+        </Card>}
       </div>
     </div>
   );

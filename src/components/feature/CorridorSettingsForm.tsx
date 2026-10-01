@@ -18,10 +18,12 @@ export function CorridorSettingsForm({
   corridor,
   mode,
   onSave,
+  readOnly = false,
 }: {
   corridor?: Corridor;
   mode: "full" | "rules";
   onSave: (draft: CorridorDraft) => Promise<void>;
+  readOnly?: boolean;
 }) {
   const { t } = useI18n();
   const [fromCountry, setFromCountry] = useState<CountryCode>(corridor?.fromCountry ?? "TD");
@@ -78,7 +80,7 @@ export function CorridorSettingsForm({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <Label>{t("corridors.from")}</Label>
-                <Select value={fromCountry} onChange={(e) => setFromCountry(e.target.value as CountryCode)}>
+                <Select disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} value={fromCountry} onChange={(e) => setFromCountry(e.target.value as CountryCode)}>
                   {COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>{c.flag} {countryDisplayName(c.code)}</option>
                   ))}
@@ -86,7 +88,7 @@ export function CorridorSettingsForm({
               </div>
               <div>
                 <Label>{t("corridors.to")}</Label>
-                <Select value={toCountry} onChange={(e) => setToCountry(e.target.value as CountryCode)}>
+                <Select disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} value={toCountry} onChange={(e) => setToCountry(e.target.value as CountryCode)}>
                   {COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>{c.flag} {countryDisplayName(c.code)}</option>
                   ))}
@@ -103,23 +105,23 @@ export function CorridorSettingsForm({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <Label>{t("detail.fx")}</Label>
-              <Input type="number" step="0.0001" min="0" value={fxRate} onChange={(e) => setFxRate(Number(e.target.value))} required />
+              <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" step="0.0001" min="0" value={fxRate} onChange={(e) => setFxRate(Number(e.target.value))} required />
             </div>
             <div>
               <Label>{t("detail.charge")}</Label>
-              <Input type="number" step="0.1" min="0" value={serviceChargePct} onChange={(e) => setServiceChargePct(Number(e.target.value))} required />
+              <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" step="0.1" min="0" value={serviceChargePct} onChange={(e) => setServiceChargePct(Number(e.target.value))} required />
             </div>
             <div>
               <Label>{t("corridors.col.perTxn")}</Label>
-              <Input type="number" min="0" value={perTxnLimit} onChange={(e) => setPerTxnLimit(Number(e.target.value))} required />
+              <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" min="0" value={perTxnLimit} onChange={(e) => setPerTxnLimit(Number(e.target.value))} required />
             </div>
             <div>
               <Label>{t("detail.daily")}</Label>
-              <Input type="number" min="0" value={dailyLimit} onChange={(e) => setDailyLimit(Number(e.target.value))} required />
+              <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" min="0" value={dailyLimit} onChange={(e) => setDailyLimit(Number(e.target.value))} required />
             </div>
             <div>
               <Label>{t("corridors.monthly")}</Label>
-              <Input type="number" min="0" value={monthlyLimit} onChange={(e) => setMonthlyLimit(Number(e.target.value))} required />
+              <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" min="0" value={monthlyLimit} onChange={(e) => setMonthlyLimit(Number(e.target.value))} required />
             </div>
           </div>
         </>
@@ -131,18 +133,18 @@ export function CorridorSettingsForm({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <Label>{t("corridors.minAmount")}</Label>
-            <Input type="number" min="0" value={minAmount} onChange={(e) => setMinAmount(Number(e.target.value))} required />
+            <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" min="0" value={minAmount} onChange={(e) => setMinAmount(Number(e.target.value))} required />
           </div>
           <div>
             <Label>{t("corridors.velocity")}</Label>
-            <Input type="number" min="1" value={maxTxnsPerDay} onChange={(e) => setMaxTxnsPerDay(Number(e.target.value))} required />
+            <Input disabled={readOnly} className={readOnly ? "text-black disabled:text-black" : undefined} type="number" min="1" value={maxTxnsPerDay} onChange={(e) => setMaxTxnsPerDay(Number(e.target.value))} required />
           </div>
           <label className="flex items-center gap-2 text-[13.5px] text-text-primary">
-            <input type="checkbox" checked={allowInward} onChange={(e) => setAllowInward(e.target.checked)} />
+            <input disabled={readOnly} type="checkbox" checked={allowInward} onChange={(e) => setAllowInward(e.target.checked)} />
             {t("corridors.allowIn")}
           </label>
           <label className="flex items-center gap-2 text-[13.5px] text-text-primary">
-            <input type="checkbox" checked={allowOutward} onChange={(e) => setAllowOutward(e.target.checked)} />
+            <input disabled={readOnly} type="checkbox" checked={allowOutward} onChange={(e) => setAllowOutward(e.target.checked)} />
             {t("corridors.allowOut")}
           </label>
         </div>
@@ -152,6 +154,8 @@ export function CorridorSettingsForm({
         <div>
           <Label>{t("settle.col.freq")}</Label>
           <Select
+            disabled={readOnly}
+            className={readOnly ? "text-black disabled:text-black" : undefined}
             value={settlementFrequency}
             onChange={(e) => setSettlementFrequency(e.target.value as Corridor["settlementFrequency"])}
           >
@@ -162,17 +166,19 @@ export function CorridorSettingsForm({
         </div>
         {mode === "full" && (
           <label className="flex items-end gap-2 pb-2 text-[13.5px] text-text-primary">
-            <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
+            <input disabled={readOnly} type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
             {t("common.enable")}
           </label>
         )}
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit" loading={saving}>
-          <Save className="h-3.5 w-3.5" /> {t("common.saveChanges")}
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="flex justify-end">
+          <Button type="submit" loading={saving}>
+            <Save className="h-3.5 w-3.5" /> {t("common.saveChanges")}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }
